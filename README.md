@@ -488,12 +488,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-## 📧 Support
-
-For support, email support@siloq.app or open an issue on GitHub.
-
----
-
 ## 🎯 Project Status
 
 **Current Version**: 1.0.0
