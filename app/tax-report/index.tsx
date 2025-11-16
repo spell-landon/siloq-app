@@ -49,7 +49,9 @@ export default function TaxReportScreen() {
     totalMiles: 0,
   });
   const [monthlyIncome, setMonthlyIncome] = useState<MonthlyIncome[]>([]);
-  const [expensesByCategory, setExpensesByCategory] = useState<ExpenseByCategory[]>([]);
+  const [expensesByCategory, setExpensesByCategory] = useState<
+    ExpenseByCategory[]
+  >([]);
   const [showYearPicker, setShowYearPicker] = useState(false);
 
   useEffect(() => {
@@ -139,9 +141,12 @@ export default function TaxReportScreen() {
 
       const monthlyData: MonthlyIncome[] = [];
       for (let i = 0; i < 12; i++) {
-        const monthName = new Date(selectedYear, i, 1).toLocaleDateString('en-US', {
-          month: 'long',
-        });
+        const monthName = new Date(selectedYear, i, 1).toLocaleDateString(
+          'en-US',
+          {
+            month: 'long',
+          }
+        );
         monthlyData.push({
           month: monthName,
           amount: monthlyMap.get(i) || 0,
@@ -212,7 +217,7 @@ export default function TaxReportScreen() {
         <Stack.Screen options={{ title: 'Tax Report', headerShown: true }} />
         <SafeAreaView style={styles.container}>
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={COLORS.primary[600]} />
+            <ActivityIndicator size='large' color={COLORS.primary[600]} />
           </View>
         </SafeAreaView>
       </>
@@ -226,8 +231,12 @@ export default function TaxReportScreen() {
           title: 'Tax Report',
           headerShown: true,
           headerRight: () => (
-            <TouchableOpacity onPress={handleExport} style={{ marginRight: 16 }}>
-              <Ionicons name="download-outline" size={24} color={COLORS.primary[600]} />
+            <TouchableOpacity onPress={handleExport} style={{ marginRight: 0 }}>
+              <Ionicons
+                name='download-outline'
+                size={24}
+                color={COLORS.primary[600]}
+              />
             </TouchableOpacity>
           ),
         }}
@@ -269,7 +278,11 @@ export default function TaxReportScreen() {
                       {year}
                     </Text>
                     {year === selectedYear && (
-                      <Ionicons name="checkmark" size={20} color={COLORS.white} />
+                      <Ionicons
+                        name='checkmark'
+                        size={20}
+                        color={COLORS.white}
+                      />
                     )}
                   </TouchableOpacity>
                 ))}
@@ -282,8 +295,12 @@ export default function TaxReportScreen() {
             <Text style={styles.sectionTitle}>Tax Summary</Text>
             <View style={styles.summaryGrid}>
               <View style={styles.summaryCard}>
-                <View style={[styles.summaryIcon, { backgroundColor: COLORS.success + '20' }]}>
-                  <Ionicons name="cash" size={24} color={COLORS.success} />
+                <View
+                  style={[
+                    styles.summaryIcon,
+                    { backgroundColor: COLORS.success + '20' },
+                  ]}>
+                  <Ionicons name='cash' size={24} color={COLORS.success} />
                 </View>
                 <Text style={styles.summaryLabel}>Business Income</Text>
                 <Text style={[styles.summaryValue, { color: COLORS.success }]}>
@@ -293,8 +310,12 @@ export default function TaxReportScreen() {
               </View>
 
               <View style={styles.summaryCard}>
-                <View style={[styles.summaryIcon, { backgroundColor: COLORS.error + '20' }]}>
-                  <Ionicons name="receipt" size={24} color={COLORS.error} />
+                <View
+                  style={[
+                    styles.summaryIcon,
+                    { backgroundColor: COLORS.error + '20' },
+                  ]}>
+                  <Ionicons name='receipt' size={24} color={COLORS.error} />
                 </View>
                 <Text style={styles.summaryLabel}>Business Expenses</Text>
                 <Text style={[styles.summaryValue, { color: COLORS.error }]}>
@@ -304,8 +325,12 @@ export default function TaxReportScreen() {
               </View>
 
               <View style={styles.summaryCard}>
-                <View style={[styles.summaryIcon, { backgroundColor: COLORS.info + '20' }]}>
-                  <Ionicons name="car" size={24} color={COLORS.info} />
+                <View
+                  style={[
+                    styles.summaryIcon,
+                    { backgroundColor: COLORS.info + '20' },
+                  ]}>
+                  <Ionicons name='car' size={24} color={COLORS.info} />
                 </View>
                 <Text style={styles.summaryLabel}>Mileage Deduction</Text>
                 <Text style={[styles.summaryValue, { color: COLORS.info }]}>
@@ -328,10 +353,12 @@ export default function TaxReportScreen() {
                     },
                   ]}>
                   <Ionicons
-                    name="calculator"
+                    name='calculator'
                     size={24}
                     color={
-                      summary.netTaxableIncome >= 0 ? COLORS.primary[600] : COLORS.warning
+                      summary.netTaxableIncome >= 0
+                        ? COLORS.primary[600]
+                        : COLORS.warning
                     }
                   />
                 </View>
@@ -368,14 +395,16 @@ export default function TaxReportScreen() {
                           {formatCurrency(item.amount)}
                         </Text>
                       </View>
-                      {index < monthlyIncome.filter((m) => m.amount > 0).length - 1 && (
-                        <View style={styles.tableDivider} />
-                      )}
+                      {index <
+                        monthlyIncome.filter((m) => m.amount > 0).length -
+                          1 && <View style={styles.tableDivider} />}
                     </View>
                   ))
               ) : (
                 <View style={styles.emptyState}>
-                  <Text style={styles.emptyText}>No income recorded for {selectedYear}</Text>
+                  <Text style={styles.emptyText}>
+                    No income recorded for {selectedYear}
+                  </Text>
                 </View>
               )}
             </View>
@@ -383,7 +412,9 @@ export default function TaxReportScreen() {
 
           {/* Expenses by Category */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Deductible Expenses by Category</Text>
+            <Text style={styles.sectionTitle}>
+              Deductible Expenses by Category
+            </Text>
             <View style={styles.tableCard}>
               {expensesByCategory.length > 0 ? (
                 <>
@@ -392,12 +423,14 @@ export default function TaxReportScreen() {
                       <View style={styles.tableRow}>
                         <View style={styles.categoryRow}>
                           <Ionicons
-                            name="ellipse"
+                            name='ellipse'
                             size={10}
                             color={COLORS.primary[600]}
                             style={{ marginRight: 10 }}
                           />
-                          <Text style={styles.tableCategory}>{item.category}</Text>
+                          <Text style={styles.tableCategory}>
+                            {item.category}
+                          </Text>
                         </View>
                         <Text style={styles.tableAmount}>
                           {formatCurrency(item.amount)}
@@ -410,7 +443,9 @@ export default function TaxReportScreen() {
                   ))}
                   <View style={styles.tableDivider} />
                   <View style={styles.tableRow}>
-                    <Text style={[styles.tableCategory, { fontWeight: '700' }]}>Total</Text>
+                    <Text style={[styles.tableCategory, { fontWeight: '700' }]}>
+                      Total
+                    </Text>
                     <Text style={[styles.tableAmount, { fontWeight: '700' }]}>
                       {formatCurrency(summary.totalExpenses)}
                     </Text>
@@ -432,11 +467,15 @@ export default function TaxReportScreen() {
             <View style={styles.detailCard}>
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Total Business Miles</Text>
-                <Text style={styles.detailValue}>{summary.totalMiles.toFixed(0)} mi</Text>
+                <Text style={styles.detailValue}>
+                  {summary.totalMiles.toFixed(0)} mi
+                </Text>
               </View>
               <View style={styles.detailDivider} />
               <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>IRS Standard Rate ({selectedYear})</Text>
+                <Text style={styles.detailLabel}>
+                  IRS Standard Rate ({selectedYear})
+                </Text>
                 <Text style={styles.detailValue}>${IRS_MILEAGE_RATE}/mi</Text>
               </View>
               <View style={styles.detailDivider} />
@@ -444,7 +483,11 @@ export default function TaxReportScreen() {
                 <Text style={[styles.detailLabel, { fontWeight: '600' }]}>
                   Total Deduction
                 </Text>
-                <Text style={[styles.detailValue, { fontWeight: '700', fontSize: 18 }]}>
+                <Text
+                  style={[
+                    styles.detailValue,
+                    { fontWeight: '700', fontSize: 18 },
+                  ]}>
                   {formatCurrency(summary.mileageDeduction)}
                 </Text>
               </View>
@@ -455,16 +498,21 @@ export default function TaxReportScreen() {
           <View style={styles.section}>
             <View style={styles.tipCard}>
               <View style={styles.tipHeader}>
-                <Ionicons name="information-circle" size={24} color={COLORS.info} />
+                <Ionicons
+                  name='information-circle'
+                  size={24}
+                  color={COLORS.info}
+                />
                 <Text style={styles.tipTitle}>Tax Filing Reminder</Text>
               </View>
               <Text style={styles.tipText}>
-                This report summarizes your business income and deductible expenses for tax
-                purposes. Please consult with a tax professional for accurate filing.
+                This report summarizes your business income and deductible
+                expenses for tax purposes. Please consult with a tax
+                professional for accurate filing.
               </Text>
               <Text style={styles.tipText}>
-                Keep all receipts and documentation for at least 7 years as recommended by
-                the IRS.
+                Keep all receipts and documentation for at least 7 years as
+                recommended by the IRS.
               </Text>
             </View>
           </View>

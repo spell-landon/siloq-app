@@ -333,15 +333,32 @@ npm run lint
 # Create feature branch
 git checkout -b feature/your-feature-name
 
-# Make changes and commit
+# Make changes and commit (use conventional commits)
 git add .
-git commit -m "Description of changes"
+git commit -m "feat: add new feature"  # MINOR version bump
+git commit -m "fix: resolve bug"       # PATCH version bump
 
 # Push to remote
 git push origin feature/your-feature-name
 
 # Create pull request on GitHub
 ```
+
+### Versioning
+
+This project uses **automated version bumping** via GitHub Actions. When you push or merge to `main`, the version is automatically incremented based on your commit message format:
+
+- `feat: ...` → **MINOR** version bump (1.0.0 → 1.1.0)
+- `fix: ...` → **PATCH** version bump (1.0.0 → 1.0.1)
+- `BREAKING CHANGE` or `!:` → **MAJOR** version bump (1.0.0 → 2.0.0)
+
+The workflow automatically updates:
+- `package.json` version
+- `app.json` expo.version
+- Creates git tags
+- Creates GitHub Releases
+
+See [VERSIONING.md](./VERSIONING.md) for complete documentation.
 
 ---
 
