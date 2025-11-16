@@ -3,11 +3,15 @@
 > Last Updated: November 16, 2024
 > **Current Status**: Core features complete, ready for enhancement phase
 
+NOTE:
+Always reference the `Ledgerly` repository at "/Users/landonspell/dev/projects/ledgerly" first to see what has already been created or implemented before creating a new instance.
+
 ---
 
 ## 🎉 Recently Completed Features
 
 ### Core Application (100% Complete)
+
 - ✅ **Project Setup**: Expo + TypeScript + Supabase + React Native
 - ✅ **Authentication**: Login, Signup, Session management
 - ✅ **Navigation**: Tab-based navigation (Dashboard, Invoices, Expenses, More)
@@ -15,6 +19,7 @@
 - ✅ **Theme**: Siloq design system (Blue #2F6D92, Mint #63D1C5)
 
 ### Invoice Management (100% Complete)
+
 - ✅ Invoice list with filters (All, Outstanding, Paid)
 - ✅ Year grouping with totals
 - ✅ Create/Edit invoice form with validation
@@ -26,6 +31,7 @@
 - ✅ Native date pickers
 
 ### Estimates (100% Complete)
+
 - ✅ Estimates list with tabs (All, Pending, Accepted, Declined)
 - ✅ Year grouping with totals
 - ✅ Create/Edit estimate form
@@ -34,6 +40,7 @@
 - ✅ Conversion tracking
 
 ### Expenses (100% Complete)
+
 - ✅ Expenses list grouped by month
 - ✅ Create/Edit expense form
 - ✅ Category selection
@@ -42,6 +49,7 @@
 - ✅ Pull-to-refresh
 
 ### Mileage Tracking (100% Complete)
+
 - ✅ Mileage list grouped by month
 - ✅ Tabs (All, Business, Personal)
 - ✅ Create/Edit mileage form
@@ -51,6 +59,7 @@
 - ✅ Detail view with share/delete
 
 ### Dashboard (100% Complete)
+
 - ✅ This Month stats (Income, Expenses, Net Profit)
 - ✅ Pending invoices count
 - ✅ Quick actions (New Invoice, Estimate, Expense, Mileage)
@@ -59,11 +68,13 @@
 - ✅ Profile button navigation
 
 ### Settings (100% Complete)
+
 - ✅ **Account Settings**: Profile, phone, email
 - ✅ **Business Settings**: Business info, invoice defaults, tax ID
 - ✅ **App Settings**: Theme, currency, notifications
 
 ### Reports & Analytics (100% Complete)
+
 - ✅ **Reports Dashboard**:
   - Time period selector (This Month, Last Month, This Year, All Time)
   - Income/Expenses/Profit metrics
@@ -77,6 +88,7 @@
   - Deductible expenses by category
 
 ### UX Enhancements (100% Complete)
+
 - ✅ Inline form validation with error messages
 - ✅ Error boundaries for crash handling
 - ✅ Search across all list screens
@@ -89,20 +101,24 @@
 ---
 
 ## 🚀 Phase 1: High Priority Quick Wins
-*Features providing immediate value with moderate effort*
 
-### 1.1 Invoice PDF Generation ⭐ **TOP PRIORITY**
-- [ ] Install expo-print and expo-sharing
-- [ ] Create professional invoice PDF template
-- [ ] Add "Download PDF" button to invoice detail
-- [ ] Add "Share PDF" functionality
-- [ ] Include business logo and branding
+_Features providing immediate value with moderate effort_
+
+### 1.1 Invoice PDF Generation ⭐ **IN PROGRESS**
+
+- [x] Install expo-print and expo-sharing
+- [x] Create professional invoice PDF template
+- [x] Add "Download PDF" button to invoice detail
+- [x] Add "Share PDF" functionality
+- [x] Include business branding in PDF
+- [ ] **TODO**: Revisit PDF layout to better match Ledgerly design (improve table styling, spacing, and overall polish)
 - **Why**: Essential for professional invoicing workflow
 - **Effort**: Medium (2-3 days)
 - **Dependencies**: None
 
 ### 1.2 Email Invoice Functionality ⭐ **TOP PRIORITY**
-- [ ] Integrate email service (SendGrid/AWS SES or Supabase Edge Functions)
+
+- [ ] Integrate email service (SendGrid/AWS SES or Supabase Edge Functions) - Please use Resend for the email service.
 - [ ] Create email invoice template (HTML)
 - [ ] Add "Send via Email" button
 - [ ] Track sent status
@@ -111,17 +127,23 @@
 - **Effort**: Medium (2-3 days)
 - **Dependencies**: PDF generation
 
-### 1.3 Payment Recording
-- [ ] Add "Record Payment" button on invoice detail
-- [ ] Payment form: amount, date, method, reference
-- [ ] Update invoice status (partial/paid)
-- [ ] Track payment history per invoice
-- [ ] Show outstanding balance
+### 1.3 Payment Recording ⭐ **COMPLETED**
+
+- [x] Add "Record Payment" button on invoice detail
+- [x] Payment form: amount, date, method, reference
+- [x] Update invoice status (partial/paid)
+- [x] Track payment history per invoice
+- [x] Show outstanding balance
+- [x] Display payment history section on invoice detail
+- [x] Add 'partial' status to database and UI
+- [x] Created payments table with full RLS
+- [x] Auto-calculate balance due and update status
 - **Why**: Complete invoice lifecycle
 - **Effort**: Low (1-2 days)
 - **Dependencies**: None
 
 ### 1.4 Invoice Actions
+
 - [ ] Duplicate invoice functionality
 - [ ] Delete invoice with confirmation
 - [ ] Mark as paid quick action
@@ -131,6 +153,7 @@
 - **Dependencies**: None
 
 ### 1.5 Client Management
+
 - [ ] Clients list screen with search
 - [ ] Client detail screen (contact info, invoice history)
 - [ ] Create/Edit client form
@@ -141,6 +164,7 @@
 - **Dependencies**: None
 
 ### 1.6 Default Values from Business Settings
+
 - [ ] Auto-populate "From" fields in invoices
 - [ ] Use default payment terms
 - [ ] Use default tax rate
@@ -150,6 +174,7 @@
 - **Dependencies**: Business settings (already complete)
 
 ### 1.7 Receipt Camera Integration
+
 - [ ] Add camera button to expense form
 - [ ] Capture receipt photo with expo-image-picker
 - [ ] Upload to Supabase storage
@@ -159,12 +184,26 @@
 - **Effort**: Low (1-2 days)
 - **Dependencies**: expo-image-picker (already installed)
 
+### 1.8 Receipt AI Extraction
+
+- [ ] Add AI capabilities to receipt capture to extract data and populate the expense form
+- **Why**: Improves workflow efficiency
+- **Effort**: Medium (3-4 days)
+- **Dependencies**: Unknown
+
+### 1.9 Invoice Reload
+
+- [ ] When an invoice is deleted and the user is take back to `/invoices`, reload/refresh the page so that the deleted invoice doesn't display anymore.
+- [ ] When an invoice is created and the user is take back to `/invoices`, reload/refresh the page so that the created invoice renders in the list.
+
 ---
 
 ## 🎯 Phase 2: Core Business Features
-*Essential features for a complete invoicing solution*
+
+_Essential features for a complete invoicing solution_
 
 ### 2.1 Recurring Invoices
+
 - [ ] Create recurring invoice template
 - [ ] Schedule frequency (weekly, monthly, yearly)
 - [ ] Auto-generate invoices on schedule
@@ -175,6 +214,7 @@
 - **Dependencies**: Background jobs, notifications
 
 ### 2.2 Invoice Templates & Customization
+
 - [ ] Multiple invoice template styles
 - [ ] Logo upload and placement
 - [ ] Custom color schemes
@@ -185,6 +225,7 @@
 - **Dependencies**: PDF generation
 
 ### 2.3 Client Portal / Public Invoice View
+
 - [ ] Public shareable invoice link (using share_token)
 - [ ] View-only invoice page
 - [ ] Payment instructions display
@@ -195,6 +236,7 @@
 - **Dependencies**: PDF generation
 
 ### 2.4 Late Fees & Payment Reminders
+
 - [ ] Auto-calculate late fees based on settings
 - [ ] Scheduled payment reminder emails
 - [ ] Overdue notification system
@@ -205,6 +247,7 @@
 - **Dependencies**: Email system, notifications
 
 ### 2.5 Partial Payments
+
 - [ ] Track multiple payments per invoice
 - [ ] Payment history view
 - [ ] Automatic status updates (partial/paid)
@@ -215,6 +258,7 @@
 - **Dependencies**: Payment recording
 
 ### 2.6 Line Item Library
+
 - [ ] Saved line item templates
 - [ ] Template categories
 - [ ] Quick add from library
@@ -225,6 +269,7 @@
 - **Dependencies**: None
 
 ### 2.7 Multi-Currency Support
+
 - [ ] Currency selector in invoice/estimate
 - [ ] Exchange rate API integration
 - [ ] Multi-currency reporting
@@ -235,6 +280,7 @@
 - **Dependencies**: Currency API
 
 ### 2.8 Time Tracking
+
 - [ ] Time entry form (project, task, hours, rate)
 - [ ] Timer functionality
 - [ ] Time entries list
@@ -247,9 +293,11 @@
 ---
 
 ## 💎 Phase 3: Advanced Features & Polish
-*Enhanced capabilities and professional refinements*
+
+_Enhanced capabilities and professional refinements_
 
 ### 3.1 Advanced Dashboard
+
 - [ ] Income vs Expenses chart (bar/line)
 - [ ] Monthly trends visualization
 - [ ] Customizable dashboard widgets
@@ -260,6 +308,7 @@
 - **Dependencies**: Chart library
 
 ### 3.2 Dark Mode
+
 - [ ] Dark color palette
 - [ ] Theme toggle in settings
 - [ ] System theme sync
@@ -270,6 +319,7 @@
 - **Dependencies**: Theme system refactor
 
 ### 3.3 Batch Operations
+
 - [ ] Multi-select in list views
 - [ ] Bulk send invoices
 - [ ] Bulk delete
@@ -280,6 +330,7 @@
 - **Dependencies**: None
 
 ### 3.4 Invoice Versioning
+
 - [ ] Save invoice versions/revisions
 - [ ] Version history view
 - [ ] Restore previous version
@@ -290,6 +341,7 @@
 - **Dependencies**: Versions table
 
 ### 3.5 Client Statements
+
 - [ ] Generate account statement
 - [ ] Date range selector
 - [ ] Show all invoices, payments, balance
@@ -300,6 +352,7 @@
 - **Dependencies**: PDF generation
 
 ### 3.6 Expense Categorization & Tags
+
 - [ ] Custom expense categories
 - [ ] Multi-tag system
 - [ ] Tag filtering
@@ -310,6 +363,7 @@
 - **Dependencies**: None
 
 ### 3.7 Budget Tracking
+
 - [ ] Set budget by category
 - [ ] Track spending vs budget
 - [ ] Budget alerts
@@ -320,6 +374,7 @@
 - **Dependencies**: Expense categories
 
 ### 3.8 Onboarding Flow
+
 - [ ] Welcome screens
 - [ ] Setup wizard (business info, first invoice)
 - [ ] Feature highlights
@@ -332,9 +387,11 @@
 ---
 
 ## 🔗 Phase 4: Integrations & Scale
-*External connections and advanced capabilities*
+
+_External connections and advanced capabilities_
 
 ### 4.1 Payment Gateway Integration ⭐ **HIGH VALUE**
+
 - [ ] Stripe integration
 - [ ] PayPal integration
 - [ ] Payment links in invoices
@@ -345,6 +402,7 @@
 - **Dependencies**: Stripe/PayPal accounts
 
 ### 4.2 Receipt OCR / Scanning
+
 - [ ] Photo to expense data extraction
 - [ ] Google Vision or AWS Textract integration
 - [ ] Auto-fill expense form from receipt
@@ -355,6 +413,7 @@
 - **Dependencies**: OCR service API
 
 ### 4.3 Cloud Backup Integration
+
 - [ ] Google Drive backup
 - [ ] Dropbox backup
 - [ ] iCloud backup (iOS)
@@ -365,6 +424,7 @@
 - **Dependencies**: Cloud SDKs
 
 ### 4.4 Accounting Software Integration
+
 - [ ] QuickBooks export
 - [ ] Xero export
 - [ ] CSV export format
@@ -375,6 +435,7 @@
 - **Dependencies**: Third-party APIs
 
 ### 4.5 GPS Mileage Tracking
+
 - [ ] Auto-track trips with GPS
 - [ ] Background location tracking
 - [ ] Start/stop trip manually
@@ -385,6 +446,7 @@
 - **Dependencies**: expo-location, permissions
 
 ### 4.6 Push Notifications
+
 - [ ] Payment received alerts
 - [ ] Invoice overdue notifications
 - [ ] Daily summary notifications
@@ -395,6 +457,7 @@
 - **Dependencies**: expo-notifications, backend
 
 ### 4.7 Biometric Authentication
+
 - [ ] Face ID / Touch ID login
 - [ ] Biometric settings
 - [ ] Fallback to PIN
@@ -404,6 +467,7 @@
 - **Dependencies**: expo-local-authentication
 
 ### 4.8 QR Code Invoices
+
 - [ ] Generate QR code for invoice
 - [ ] QR code for payment
 - [ ] Scan to view invoice
@@ -415,9 +479,11 @@
 ---
 
 ## 🏗️ Phase 5: Technical Improvements
-*Performance, reliability, and code quality*
+
+_Performance, reliability, and code quality_
 
 ### 5.1 React Query Integration
+
 - [ ] Replace Supabase calls with React Query
 - [ ] Implement caching strategy
 - [ ] Optimistic updates
@@ -428,6 +494,7 @@
 - **Dependencies**: @tanstack/react-query
 
 ### 5.2 Offline Mode
+
 - [ ] Local database with WatermelonDB
 - [ ] Sync queue
 - [ ] Conflict resolution
@@ -438,6 +505,7 @@
 - **Dependencies**: WatermelonDB or similar
 
 ### 5.3 Automated Testing
+
 - [ ] Unit tests for utilities
 - [ ] Component tests
 - [ ] Integration tests
@@ -448,6 +516,7 @@
 - **Dependencies**: Jest, Detox
 
 ### 5.4 Performance Monitoring
+
 - [ ] Sentry error tracking
 - [ ] Performance metrics
 - [ ] Crash reporting
@@ -458,6 +527,7 @@
 - **Dependencies**: Sentry account
 
 ### 5.5 Skeleton Loaders
+
 - [ ] Replace loading spinners
 - [ ] Content-aware skeletons
 - [ ] Smooth transitions
@@ -467,6 +537,7 @@
 - **Dependencies**: None
 
 ### 5.6 Animations & Transitions
+
 - [ ] Screen transitions
 - [ ] List animations
 - [ ] Button feedback
@@ -479,9 +550,11 @@
 ---
 
 ## 🚢 Phase 6: Deployment & Distribution
-*Prepare for app store release*
+
+_Prepare for app store release_
 
 ### 6.1 App Store Assets
+
 - [ ] iOS screenshots (all device sizes)
 - [ ] Android screenshots
 - [ ] App preview videos
@@ -493,6 +566,7 @@
 - **Dependencies**: Final app ready
 
 ### 6.2 Legal & Compliance
+
 - [ ] Privacy policy
 - [ ] Terms of service
 - [ ] GDPR compliance tools
@@ -503,6 +577,7 @@
 - **Dependencies**: Legal review
 
 ### 6.3 Production Builds
+
 - [ ] Configure EAS Build
 - [ ] iOS production build
 - [ ] Android production build
@@ -513,6 +588,7 @@
 - **Dependencies**: EAS account
 
 ### 6.4 App Store Submissions
+
 - [ ] Apple App Store submission
 - [ ] Google Play Store submission
 - [ ] App review preparation
@@ -525,24 +601,32 @@
 
 ## 📊 Priority Matrix
 
+### ✅ Completed
+
+1. ✅ Invoice PDF Generation (needs polish)
+2. ✅ Payment Recording (fully complete)
+
 ### This Week (Immediate Focus)
-1. ⭐ Invoice PDF Generation
-2. ⭐ Email Invoice Functionality
-3. ⭐ Payment Recording
+
+3. ⭐ Email Invoice Functionality
+4. ⭐ Client Management
+5. ⭐ Invoice Actions (duplicate, delete, convert)
 
 ### Next 2 Weeks
-4. Client Management
-5. Invoice Actions (duplicate, delete, convert)
+
 6. Default Values from Business Settings
 7. Receipt Camera Integration
+8. Receipt AI Extraction
 
 ### This Month
+
 8. Recurring Invoices
 9. Invoice Templates
 10. Client Portal
 11. Dark Mode
 
 ### Next Quarter
+
 - Payment Gateway Integration
 - Time Tracking
 - Multi-Currency
@@ -554,18 +638,21 @@
 ## 🎯 Success Metrics
 
 **Short Term (1 month)**
+
 - [ ] Users can create, send, and track invoices end-to-end
 - [ ] PDF and email delivery working
 - [ ] Payment recording functional
 - [ ] Client management complete
 
 **Medium Term (3 months)**
+
 - [ ] Recurring invoices live
 - [ ] Payment gateway integrated
 - [ ] Mobile app published to stores
 - [ ] 100+ active users
 
 **Long Term (6 months)**
+
 - [ ] Full feature parity with Invoice Simple
 - [ ] Advanced features (time tracking, multi-currency)
 - [ ] 1000+ active users

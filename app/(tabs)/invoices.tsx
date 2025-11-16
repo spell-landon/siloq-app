@@ -46,7 +46,7 @@ export default function InvoicesScreen() {
         .order('date', { ascending: false });
 
       if (activeTab === 'outstanding') {
-        query = query.in('status', ['sent', 'overdue']);
+        query = query.in('status', ['sent', 'overdue', 'partial', 'draft']);
       } else if (activeTab === 'paid') {
         query = query.eq('status', 'paid');
       }
@@ -72,6 +72,8 @@ export default function InvoicesScreen() {
     switch (status) {
       case 'paid':
         return COLORS.success;
+      case 'partial':
+        return COLORS.accent[400];
       case 'overdue':
         return COLORS.error;
       case 'sent':
