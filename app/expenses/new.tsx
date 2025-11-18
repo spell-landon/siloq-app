@@ -9,10 +9,13 @@ import {
   Alert,
   ActivityIndicator,
   Switch,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system/legacy';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/lib/stores/auth';
 import { DatePicker } from '@/components/DatePicker';
@@ -49,6 +52,8 @@ export default function NewExpenseScreen() {
   const [isTaxDeductible, setIsTaxDeductible] = useState(true);
   const [notes, setNotes] = useState('');
   const [showCategoryPicker, setShowCategoryPicker] = useState(false);
+  const [receiptImage, setReceiptImage] = useState<string | null>(null);
+  const [uploadingReceipt, setUploadingReceipt] = useState(false);
 
   // Validation errors
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -111,6 +116,132 @@ export default function NewExpenseScreen() {
     }
   };
 
+  const pickImage = async (source: 'camera' | 'gallery') => {
+    try {
+      let result;
+
+      if (source === 'camera') {
+        const permission = await ImagePicker.requestCameraPermissionsAsync();
+        if (!permission.granted) {
+          Alert.alert('Permission Required', 'Camera permission is required to take photos');
+          return;
+        }
+        result = await ImagePicker.launchCameraAsync({
+          allowsEditing: true,
+          quality: 0.8,
+          exif: false,
+        });
+      } else {
+        const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (!permission.granted) {
+          Alert.alert('Permission Required', 'Photo library permission is required');
+          return;
+        }
+        result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ['images'],
+          allowsEditing: true,
+          quality: 0.8,
+          exif: false,
+        });
+      }
+
+      if (!result.canceled && result.assets[0]) {
+        setReceiptImage(result.assets[0].uri);
+      }
+    } catch (error) {
+      console.error('Error picking image:', error);
+      Alert.alert('Error', 'Failed to select image');
+    }
+  };
+
+  const showImagePickerOptions = () => {
+    Alert.alert(
+      'Add Receipt Photo',
+      'Choose how to add your receipt',
+      [
+        {
+          text: 'Take Photo',
+          onPress: () => pickImage('camera'),
+        },
+        {
+          text: 'Choose from Library',
+          onPress: () => pickImage('gallery'),
+        },
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+      ]
+    );
+  };
+
+  const uploadReceipt = async (imageUri: string): Promise<string | null> => {
+    if (!user) return null;
+
+    try {
+      setUploadingReceipt(true);
+
+      // Generate unique filename
+      const fileExt = imageUri.split('.').pop()?.toLowerCase() || 'jpg';
+      const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+
+      // Read the image file as base64
+      const base64 = await FileSystem.readAsStringAsync(imageUri, {
+        encoding: 'base64',
+      });
+
+      // Decode base64 to binary for upload
+      const decode = (str: string): Uint8Array => {
+        const binary = atob(str);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) {
+          bytes[i] = binary.charCodeAt(i);
+        }
+        return bytes;
+      };
+
+      const arrayBuffer = decode(base64);
+
+      // Upload to Supabase storage
+      const { data, error } = await supabase.storage
+        .from('receipts')
+        .upload(fileName, arrayBuffer, {
+          contentType: `image/${fileExt}`,
+          upsert: false,
+        });
+
+      if (error) throw error;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('receipts')
+        .getPublicUrl(fileName);
+
+      console.log('Receipt uploaded successfully. Public URL:', publicUrl);
+      return publicUrl;
+    } catch (error) {
+      console.error('Error uploading receipt:', error);
+      throw error;
+    } finally {
+      setUploadingReceipt(false);
+    }
+  };
+
+  const removeReceipt = () => {
+    Alert.alert(
+      'Remove Receipt',
+      'Are you sure you want to remove this receipt photo?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Remove',
+          style: 'destructive',
+          onPress: () => setReceiptImage(null),
+        },
+      ]
+    );
+  };
+
   const handleSave = async () => {
     if (!user) return;
 
@@ -136,6 +267,22 @@ export default function NewExpenseScreen() {
 
     setSaving(true);
     try {
+      // Upload receipt if one was selected
+      let receiptUrl: string | null = null;
+      if (receiptImage) {
+        try {
+          receiptUrl = await uploadReceipt(receiptImage);
+        } catch (uploadError) {
+          console.error('Error uploading receipt:', uploadError);
+          // Continue saving expense even if receipt upload fails
+          Alert.alert(
+            'Warning',
+            'Receipt photo could not be uploaded, but expense will be saved.',
+            [{ text: 'OK' }]
+          );
+        }
+      }
+
       const { error } = await supabase.from('expenses').insert({
         user_id: user.id,
         merchant: merchant.trim(),
@@ -144,6 +291,7 @@ export default function NewExpenseScreen() {
         date,
         is_tax_deductible: isTaxDeductible,
         notes: notes.trim() || null,
+        receipt_url: receiptUrl,
       });
 
       if (error) throw error;
@@ -311,6 +459,46 @@ export default function NewExpenseScreen() {
                 multiline
                 numberOfLines={4}
               />
+            </View>
+
+            {/* Receipt Photo */}
+            <View style={styles.field}>
+              <Text style={styles.label}>Receipt Photo</Text>
+              {receiptImage ? (
+                <View style={styles.receiptContainer}>
+                  <Image
+                    source={{ uri: receiptImage }}
+                    style={styles.receiptImage}
+                    resizeMode='cover'
+                  />
+                  <TouchableOpacity
+                    style={styles.removeReceiptButton}
+                    onPress={removeReceipt}>
+                    <Ionicons name='close-circle' size={28} color={COLORS.white} />
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <TouchableOpacity
+                  style={styles.addReceiptButton}
+                  onPress={showImagePickerOptions}
+                  disabled={uploadingReceipt}>
+                  {uploadingReceipt ? (
+                    <ActivityIndicator color={COLORS.accent[400]} />
+                  ) : (
+                    <>
+                      <Ionicons
+                        name='camera-outline'
+                        size={32}
+                        color={COLORS.accent[400]}
+                      />
+                      <Text style={styles.addReceiptText}>Add Receipt Photo</Text>
+                      <Text style={styles.addReceiptSubtext}>
+                        Take a photo or choose from library
+                      </Text>
+                    </>
+                  )}
+                </TouchableOpacity>
+              )}
             </View>
           </View>
         </ScrollView>
@@ -481,5 +669,50 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: COLORS.white,
+  },
+  textArea: {
+    minHeight: 100,
+    paddingTop: 12,
+    textAlignVertical: 'top',
+  },
+  receiptContainer: {
+    position: 'relative',
+    borderRadius: 12,
+    overflow: 'hidden',
+    backgroundColor: COLORS.gray[100],
+  },
+  receiptImage: {
+    width: '100%',
+    height: 200,
+    borderRadius: 12,
+  },
+  removeReceiptButton: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    borderRadius: 14,
+  },
+  addReceiptButton: {
+    backgroundColor: COLORS.white,
+    borderWidth: 2,
+    borderColor: COLORS.accent[200],
+    borderStyle: 'dashed',
+    borderRadius: 12,
+    padding: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  addReceiptText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: COLORS.accent[400],
+    marginTop: 12,
+  },
+  addReceiptSubtext: {
+    fontSize: 13,
+    color: COLORS.gray[500],
+    marginTop: 4,
+    textAlign: 'center',
   },
 });

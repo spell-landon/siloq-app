@@ -8,6 +8,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   TextInput,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -16,6 +17,7 @@ import { useRouter } from 'expo-router';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/lib/stores/auth';
 import { formatCurrency, formatDate } from '@/lib/utils';
+import { ReceiptViewer } from '@/components/ReceiptViewer';
 import { COLORS } from '@/lib/theme';
 import type { Expense } from '@/lib/types';
 
@@ -30,6 +32,7 @@ export default function ExpensesScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchVisible, setSearchVisible] = useState(false);
+  const [viewingReceipt, setViewingReceipt] = useState<string | null>(null);
 
   useEffect(() => {
     loadExpenses();
@@ -296,6 +299,23 @@ export default function ExpensesScreen() {
                               </Text>
                             </View>
                           </View>
+                          {expense.receipt_url && (
+                            <TouchableOpacity
+                              onPress={(e) => {
+                                e.stopPropagation();
+                                setViewingReceipt(expense.receipt_url);
+                              }}>
+                              <Image
+                                source={{ uri: expense.receipt_url }}
+                                style={styles.receiptThumbnail}
+                                resizeMode='cover'
+                                onError={(error) => {
+                                  console.log('Image load error:', error.nativeEvent.error);
+                                  console.log('Image URL:', expense.receipt_url);
+                                }}
+                              />
+                            </TouchableOpacity>
+                          )}
                           <View style={styles.expenseAmount}>
                             <Text style={styles.amountText}>
                               {formatCurrency(expense.total)}
@@ -323,6 +343,15 @@ export default function ExpensesScreen() {
           onPress={() => router.push('/expenses/new')}>
           <Ionicons name='add' size={28} color={COLORS.white} />
         </TouchableOpacity>
+
+        {/* Receipt Viewer */}
+        {viewingReceipt && (
+          <ReceiptViewer
+            visible={!!viewingReceipt}
+            receiptUrl={viewingReceipt}
+            onClose={() => setViewingReceipt(null)}
+          />
+        )}
       </SafeAreaView>
     </View>
   );
@@ -495,6 +524,13 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '600',
     color: COLORS.success,
+  },
+  receiptThumbnail: {
+    width: 48,
+    height: 48,
+    borderRadius: 8,
+    marginRight: 12,
+    backgroundColor: COLORS.gray[100],
   },
   fab: {
     position: 'absolute',

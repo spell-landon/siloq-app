@@ -10,6 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import Constants from 'expo-constants';
 import { useAuthStore } from '@/lib/stores/auth';
 import { COLORS } from '@/lib/theme';
 
@@ -165,7 +166,7 @@ export default function MoreScreen() {
           {/* App Info */}
           <View style={styles.appInfo}>
             <Text style={styles.appName}>Siloq</Text>
-            <Text style={styles.appVersion}>Version 1.0.0</Text>
+            <Text style={styles.appVersion}>Version {Constants.expoConfig?.version || '1.0.0'}</Text>
           </View>
         </ScrollView>
       </SafeAreaView>

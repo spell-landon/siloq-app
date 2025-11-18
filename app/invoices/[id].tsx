@@ -130,6 +130,40 @@ export default function InvoiceDetailScreen() {
     }
   };
 
+  const handleMarkAsSent = async () => {
+    if (!invoice) return;
+
+    Alert.alert(
+      'Mark as Sent',
+      'This will update the invoice status to "Sent". Continue?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Mark as Sent',
+          onPress: async () => {
+            try {
+              const { error } = await supabase
+                .from('invoices')
+                .update({
+                  status: 'sent',
+                  updated_at: new Date().toISOString(),
+                })
+                .eq('id', invoice.id);
+
+              if (error) throw error;
+
+              Alert.alert('Success', 'Invoice marked as sent');
+              loadInvoice();
+            } catch (error: any) {
+              console.error('Error marking as sent:', error);
+              Alert.alert('Error', error.message || 'Failed to update invoice');
+            }
+          },
+        },
+      ]
+    );
+  };
+
   const handleDelete = () => {
     Alert.alert(
       'Delete Invoice',
@@ -154,6 +188,95 @@ export default function InvoiceDetailScreen() {
             } catch (error: any) {
               console.error('Error deleting invoice:', error);
               Alert.alert('Error', error.message || 'Failed to delete invoice');
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleDuplicate = async () => {
+    if (!user || !invoice) return;
+
+    Alert.alert(
+      'Duplicate Invoice',
+      'This will create a copy of this invoice with today\'s date.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Duplicate',
+          onPress: async () => {
+            try {
+              // Generate new invoice number
+              const { data: existingInvoices } = await supabase
+                .from('invoices')
+                .select('invoice_number')
+                .eq('user_id', user.id)
+                .order('created_at', { ascending: false })
+                .limit(1);
+
+              let newInvoiceNumber = 'INV-0001';
+              if (existingInvoices && existingInvoices.length > 0) {
+                const lastNumber = existingInvoices[0].invoice_number;
+                const match = lastNumber.match(/INV-(\d+)/);
+                if (match) {
+                  const nextNum = parseInt(match[1]) + 1;
+                  newInvoiceNumber = `INV-${nextNum.toString().padStart(4, '0')}`;
+                }
+              }
+
+              // Create duplicate invoice
+              const today = new Date().toISOString().split('T')[0];
+              const dueDate = new Date();
+              dueDate.setDate(dueDate.getDate() + 30);
+              const dueDateStr = dueDate.toISOString().split('T')[0];
+
+              const { data: newInvoice, error } = await supabase
+                .from('invoices')
+                .insert({
+                  user_id: user.id,
+                  client_id: invoice.client_id,
+                  invoice_number: newInvoiceNumber,
+                  date: today,
+                  due_date: dueDateStr,
+                  status: 'draft',
+                  from_name: invoice.from_name,
+                  from_email: invoice.from_email,
+                  from_address: invoice.from_address,
+                  from_phone: invoice.from_phone,
+                  from_business_number: invoice.from_business_number,
+                  from_website: invoice.from_website,
+                  from_owner: invoice.from_owner,
+                  bill_to_name: invoice.bill_to_name,
+                  bill_to_email: invoice.bill_to_email,
+                  bill_to_address: invoice.bill_to_address,
+                  bill_to_phone: invoice.bill_to_phone,
+                  bill_to_mobile: invoice.bill_to_mobile,
+                  bill_to_fax: invoice.bill_to_fax,
+                  line_items: invoice.line_items,
+                  subtotal: invoice.subtotal,
+                  discount: invoice.discount,
+                  tax: invoice.tax,
+                  total: invoice.total,
+                  balance_due: invoice.total,
+                  notes: invoice.notes,
+                  payment_instructions: invoice.payment_instructions,
+                })
+                .select()
+                .single();
+
+              if (error) throw error;
+
+              Alert.alert('Success', 'Invoice duplicated successfully', [
+                {
+                  text: 'View',
+                  onPress: () => router.push(`/invoices/${newInvoice.id}`),
+                },
+                { text: 'OK' },
+              ]);
+            } catch (error: any) {
+              console.error('Error duplicating invoice:', error);
+              Alert.alert('Error', error.message || 'Failed to duplicate invoice');
             }
           },
         },
@@ -592,6 +715,20 @@ export default function InvoiceDetailScreen() {
               />
               <Text style={styles.actionText}>Share Text</Text>
             </TouchableOpacity>
+            {invoice.status === 'draft' && (
+              <TouchableOpacity
+                style={styles.actionItem}
+                onPress={handleMarkAsSent}>
+                <Ionicons
+                  name='send-outline'
+                  size={20}
+                  color={COLORS.warning}
+                />
+                <Text style={[styles.actionText, { color: COLORS.warning }]}>
+                  Mark as Sent
+                </Text>
+              </TouchableOpacity>
+            )}
             {invoice.status !== 'paid' && (
               <>
                 <TouchableOpacity
@@ -623,6 +760,10 @@ export default function InvoiceDetailScreen() {
                 </TouchableOpacity>
               </>
             )}
+            <TouchableOpacity style={styles.actionItem} onPress={handleDuplicate}>
+              <Ionicons name='copy-outline' size={20} color={COLORS.gray[900]} />
+              <Text style={styles.actionText}>Duplicate</Text>
+            </TouchableOpacity>
             <TouchableOpacity style={styles.actionItem} onPress={handleDelete}>
               <Ionicons name='trash-outline' size={20} color={COLORS.error} />
               <Text style={[styles.actionText, { color: COLORS.error }]}>

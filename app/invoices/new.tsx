@@ -23,7 +23,7 @@ import {
   validateNonNegativeNumber,
   enforcePositiveNumber,
 } from '@/lib/validation';
-import type { LineItem, Client } from '@/lib/types';
+import type { LineItem, Client, BusinessSettings } from '@/lib/types/database';
 import { COLORS } from '@/lib/theme';
 
 const PAYMENT_TERMS = [
@@ -38,6 +38,7 @@ export default function NewInvoiceScreen() {
   const router = useRouter();
   const { user } = useAuthStore();
   const [loading, setLoading] = useState(false);
+  const [businessSettings, setBusinessSettings] = useState<BusinessSettings | null>(null);
 
   // Invoice metadata
   const [invoiceNumber, setInvoiceNumber] = useState('');
@@ -71,6 +72,7 @@ export default function NewInvoiceScreen() {
 
   useEffect(() => {
     generateInvoiceNumber();
+    loadBusinessSettings();
   }, []);
 
   useEffect(() => {
@@ -80,6 +82,44 @@ export default function NewInvoiceScreen() {
   useEffect(() => {
     calculateTotals();
   }, [lineItems, taxRate, discount]);
+
+  const loadBusinessSettings = async () => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('business_settings')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+
+      if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows
+
+      if (data) {
+        setBusinessSettings(data);
+
+        // Apply defaults from business settings
+        if (data.default_tax_rate !== null) {
+          setTaxRate(data.default_tax_rate);
+        }
+
+        if (data.default_payment_terms) {
+          // Parse payment terms like "Net 30" to get the number
+          const match = data.default_payment_terms.match(/(\d+)/);
+          if (match) {
+            setPaymentTerms(parseInt(match[1]));
+          }
+        }
+
+        if (data.default_notes || data.default_invoice_note) {
+          setNotes(data.default_notes || data.default_invoice_note || '');
+        }
+      }
+    } catch (error) {
+      console.error('Error loading business settings:', error);
+      // Don't show error to user, just use defaults
+    }
+  };
 
   const generateInvoiceNumber = async () => {
     if (!user) return;
@@ -251,6 +291,23 @@ export default function NewInvoiceScreen() {
 
     setLoading(true);
     try {
+      // Build "from" address from business settings
+      let fromAddress = businessSettings?.business_address || '';
+      if (businessSettings?.city || businessSettings?.state || businessSettings?.zip) {
+        const cityStateZip = [
+          businessSettings?.city,
+          businessSettings?.state,
+          businessSettings?.zip,
+        ]
+          .filter(Boolean)
+          .join(', ');
+        if (fromAddress && cityStateZip) {
+          fromAddress += '\n' + cityStateZip;
+        } else if (cityStateZip) {
+          fromAddress = cityStateZip;
+        }
+      }
+
       const { error } = await supabase.from('invoices').insert({
         user_id: user.id,
         client_id: selectedClient.id,
@@ -259,6 +316,15 @@ export default function NewInvoiceScreen() {
         due_date: dueDate,
         terms: `Net ${paymentTerms}`,
         status,
+        // From (Business) fields
+        from_name: businessSettings?.business_name || null,
+        from_email: businessSettings?.business_email || null,
+        from_address: fromAddress || null,
+        from_phone: businessSettings?.business_phone || businessSettings?.business_mobile || null,
+        from_business_number: businessSettings?.business_number || null,
+        from_website: businessSettings?.business_website || null,
+        from_owner: businessSettings?.business_owner || null,
+        // Bill To (Client) fields
         bill_to_name: selectedClient.name,
         bill_to_email: selectedClient.email || null,
         bill_to_address: selectedClient.address || null,

@@ -12,6 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import Constants from 'expo-constants';
 import { COLORS, SPACING, RADIUS } from '@/lib/theme';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/lib/stores/auth';
@@ -424,7 +425,7 @@ export default function AppSettingsScreen() {
             <View style={styles.statsContainer}>
               <View style={styles.statItem}>
                 <Text style={styles.statLabel}>Version</Text>
-                <Text style={styles.statValue}>1.0.0</Text>
+                <Text style={styles.statValue}>{Constants.expoConfig?.version || '1.0.0'}</Text>
               </View>
               <View style={styles.statDivider} />
               <View style={styles.statItem}>

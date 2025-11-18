@@ -74,14 +74,17 @@ export default function EstimatesScreen() {
     switch (status) {
       case 'accepted':
         return COLORS.success;
-      case 'expired':
-        return COLORS.muted;
+      case 'pending':
+      case 'sent':
+        return COLORS.warning;
+      case 'declined':
       case 'rejected':
         return COLORS.destructive;
-      case 'pending':
-        return COLORS.info;
+      case 'expired':
+        return COLORS.error;
+      case 'draft':
       default:
-        return COLORS.muted;
+        return COLORS.gray[500];
     }
   };
 

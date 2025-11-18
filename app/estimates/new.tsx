@@ -21,13 +21,14 @@ import {
   validatePositiveNumber,
   enforcePositiveNumber,
 } from '@/lib/validation';
-import type { LineItem, Client } from '@/lib/types';
+import type { LineItem, Client, BusinessSettings } from '@/lib/types/database';
 import { COLORS } from '@/lib/theme';
 
 export default function NewEstimateScreen() {
   const router = useRouter();
   const { user } = useAuthStore();
   const [loading, setLoading] = useState(false);
+  const [businessSettings, setBusinessSettings] = useState<BusinessSettings | null>(null);
 
   // Estimate metadata
   const [estimateNumber, setEstimateNumber] = useState('');
@@ -61,6 +62,7 @@ export default function NewEstimateScreen() {
 
   useEffect(() => {
     generateEstimateNumber();
+    loadBusinessSettings();
   }, []);
 
   useEffect(() => {
@@ -70,6 +72,36 @@ export default function NewEstimateScreen() {
   useEffect(() => {
     calculateTotals();
   }, [lineItems, taxRate, discount]);
+
+  const loadBusinessSettings = async () => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('business_settings')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+
+      if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows
+
+      if (data) {
+        setBusinessSettings(data);
+
+        // Apply defaults from business settings
+        if (data.default_tax_rate !== null) {
+          setTaxRate(data.default_tax_rate);
+        }
+
+        if (data.default_notes || data.default_invoice_note) {
+          setNotes(data.default_notes || data.default_invoice_note || '');
+        }
+      }
+    } catch (error) {
+      console.error('Error loading business settings:', error);
+      // Don't show error to user, just use defaults
+    }
+  };
 
   const generateEstimateNumber = async () => {
     if (!user) return;
@@ -233,6 +265,23 @@ export default function NewEstimateScreen() {
 
     setLoading(true);
     try {
+      // Build "from" address from business settings
+      let fromAddress = businessSettings?.business_address || '';
+      if (businessSettings?.city || businessSettings?.state || businessSettings?.zip) {
+        const cityStateZip = [
+          businessSettings?.city,
+          businessSettings?.state,
+          businessSettings?.zip,
+        ]
+          .filter(Boolean)
+          .join(', ');
+        if (fromAddress && cityStateZip) {
+          fromAddress += '\n' + cityStateZip;
+        } else if (cityStateZip) {
+          fromAddress = cityStateZip;
+        }
+      }
+
       const { error } = await supabase.from('estimates').insert({
         user_id: user.id,
         client_id: selectedClient.id,
@@ -240,6 +289,12 @@ export default function NewEstimateScreen() {
         date,
         expiry_date: expiryDate,
         status,
+        // From (Business) fields
+        from_name: businessSettings?.business_name || null,
+        from_email: businessSettings?.business_email || null,
+        from_address: fromAddress || null,
+        from_phone: businessSettings?.business_phone || businessSettings?.business_mobile || null,
+        // Bill To (Client) fields
         bill_to_name: selectedClient.name,
         bill_to_email: selectedClient.email || null,
         bill_to_address: selectedClient.address || null,

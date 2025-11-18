@@ -142,59 +142,68 @@ _Features providing immediate value with moderate effort_
 - **Effort**: Low (1-2 days)
 - **Dependencies**: None
 
-### 1.4 Invoice Actions
+### 1.4 Invoice Actions ⭐ **COMPLETED**
 
-- [ ] Duplicate invoice functionality
-- [ ] Delete invoice with confirmation
-- [ ] Mark as paid quick action
-- [ ] Convert estimate to invoice
+- [x] Duplicate invoice functionality
+- [x] Delete invoice with confirmation (already existed)
+- [x] Mark as sent quick action
+- [x] Mark as paid quick action (already existed)
+- [x] Convert estimate to invoice (already existed)
 - **Why**: Improves workflow efficiency
 - **Effort**: Low (1 day)
 - **Dependencies**: None
 
-### 1.5 Client Management
+### 1.5 Client Management ⭐ **COMPLETED**
 
-- [ ] Clients list screen with search
-- [ ] Client detail screen (contact info, invoice history)
-- [ ] Create/Edit client form
-- [ ] "New Invoice for Client" quick action
-- [ ] Client total billed display
+- [x] Clients list screen with search
+- [x] Client detail screen (contact info, invoice history)
+- [x] Create/Edit client form
+- [x] "New Invoice for Client" quick action
+- [x] Client total billed display
 - **Why**: Better client relationship management
 - **Effort**: Medium (2-3 days)
 - **Dependencies**: None
 
-### 1.6 Default Values from Business Settings
+### 1.6 Default Values from Business Settings ⭐ **COMPLETED**
 
-- [ ] Auto-populate "From" fields in invoices
-- [ ] Use default payment terms
-- [ ] Use default tax rate
-- [ ] Use default invoice notes
+- [x] Auto-populate "From" fields in invoices
+- [x] Use default payment terms
+- [x] Use default tax rate
+- [x] Use default invoice notes
 - **Why**: Reduces repetitive data entry
 - **Effort**: Low (1 day)
 - **Dependencies**: Business settings (already complete)
 
-### 1.7 Receipt Camera Integration
+### 1.7 Receipt Camera Integration ⭐ **COMPLETED**
 
-- [ ] Add camera button to expense form
-- [ ] Capture receipt photo with expo-image-picker
-- [ ] Upload to Supabase storage
-- [ ] Display receipt thumbnail in expense list
-- [ ] Full-screen receipt viewer
+- [x] Add camera button to expense form
+- [x] Capture receipt photo with expo-image-picker
+- [x] Upload to Supabase storage
+- [x] Display receipt thumbnail in expense list
+- [x] Full-screen receipt viewer
 - **Why**: Mobile-native convenience
 - **Effort**: Low (1-2 days)
 - **Dependencies**: expo-image-picker (already installed)
+- **Note**: Run migration `20250116000004_create_receipts_storage.sql` to create storage bucket
 
-### 1.8 Receipt AI Extraction
-
-- [ ] Add AI capabilities to receipt capture to extract data and populate the expense form
-- **Why**: Improves workflow efficiency
-- **Effort**: Medium (3-4 days)
-- **Dependencies**: Unknown
-
-### 1.9 Invoice Reload
+### 1.8 Invoice Reload
 
 - [ ] When an invoice is deleted and the user is take back to `/invoices`, reload/refresh the page so that the deleted invoice doesn't display anymore.
 - [ ] When an invoice is created and the user is take back to `/invoices`, reload/refresh the page so that the created invoice renders in the list.
+- [ ] Same for Estimates and Expenses. And the Dashboard.
+- [ ] It's like we need to "subscribe" to the events from Supabase or something. Or just trigger a reload/refresh when navigating around and creating/editing/deleting database items?
+
+### 1.9 Miscellaneous
+
+- [x] Update version number on "More" to match what is in Github. ✅ COMPLETED
+- [ ] Move "Estimates" and "Mileage" to the main navigation bar. Resize the icons and labels if necessary.
+- [ ] Update color scheme to not use the teal-ish color. Find something else that works well with the blue color.
+- [ ] Maybe "Account" and "Business" Settings could be a single item? Or maybe the Dashboard icon goes to Business Settings instead of Account Settings?
+- [ ] Update "Estimates" & "Expenses" list design to match "Invoices"
+- [ ] Add light gray background to year-total header on Invoices, Estimates & Expenses
+- [ ] Convert Stylesheet to Tailwind/Nativewind CSS
+- [ ] Fix the dropdown menu when selecting the category of Track Expense.
+- [ ] Expenses need to be editable.
 
 ---
 
